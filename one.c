@@ -12,9 +12,12 @@
 
 int onebyte_open(struct inode *inode, struct file *filep);
 int onebyte_release(struct inode *inode, struct file *filep);
-ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos);
+ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos);
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos);
 static void onebyte_exit(void);
+
+static const char test[] = "Hello\n\0";
+static const ssize_t test_size = sizeof(test);
 
 /* definition of file_operation structure */
 struct file_operations onebyte_fops  {
@@ -27,6 +30,7 @@ struct file_operations onebyte_fops  {
 char *onebyte_data = NULL;
 
 int onebyte_open(struct inode *inode, struct file *filep) {
+    printk(KERN_ALERT "One byte module opened");
     return 0; // always successful
 }
 
@@ -34,12 +38,27 @@ int onebyte_release(struct inode *inode, struct file *filep) {
     return 0; // always successful
 }
 
-ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos) {
+ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
     /*please complete the function on your own*/
+    if (*f_pos > test_size) {
+        return 0;
+    }
+
+    if (*f_pos + count > test_size) {
+        count = test_size - *f_pos;
+    }
+
+    if (copy_to_user(buf, test + *f_pos, count) != 0) {
+        return -EFAULT;
+    }
+
+    *f_pos += count;
+    return count;
 }
 
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos) {
     /*please complete the function on your own*/
+    return count;
 }
 
 static int onebyte_init(void) {
@@ -69,7 +88,7 @@ static int onebyte_init(void) {
     // initialize the value to be X
     *onebyte_data = 'X';
     printk(KERN_ALERT "This is a onebyte device module\n");
-        return 0;
+    return 0;
 }
 
 static void onebyte_exit(void) {
