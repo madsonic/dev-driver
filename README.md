@@ -61,3 +61,8 @@ module_exit(hello_exit);
  ![parameterized module](https://i.imgur.com/0iaurdj.png)
 
  __Note:__ `dmesg -c` was called prior to loading the module
+
+### 2a
+```shell
+$ mknod /dev/onebyte c 61 0
+```
