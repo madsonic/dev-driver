@@ -6,39 +6,42 @@
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/proc_fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
-#define MAJOR_NUMBER 61 /* forward declaration */
+MODULE_LICENSE("GPL");
 
-int onebyte_open(struct inode *inode, struct file *filep);
-int onebyte_release(struct inode *inode, struct file *filep);
-ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos);
-ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos);
+#define MAJOR_NUMBER 61 
+
+/* forward declaration */
+static int onebyte_open(struct inode *inode, struct file *filep);
+static int onebyte_release(struct inode *inode, struct file *filep);
+static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos);
+static ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos);
 static void onebyte_exit(void);
 
 static const char test[] = "Hello\n\0";
 static const ssize_t test_size = sizeof(test);
 
 /* definition of file_operation structure */
-struct file_operations onebyte_fops  {
-    read:    onebyte_read,
-    write:   onebyte_write,
-    open:    onebyte_open,
-    release: onebyte_release
+static struct file_operations onebyte_fops = {
+    .read =    onebyte_read,
+    .write =   onebyte_write,
+    .open =    onebyte_open,
+    .release = onebyte_release
 };
 
-char *onebyte_data = NULL;
+static char *onebyte_data = NULL;
 
-int onebyte_open(struct inode *inode, struct file *filep) {
+static int onebyte_open(struct inode *inode, struct file *filep) {
     printk(KERN_ALERT "One byte module opened");
     return 0; // always successful
 }
 
-int onebyte_release(struct inode *inode, struct file *filep) {
+static int onebyte_release(struct inode *inode, struct file *filep) {
     return 0; // always successful
 }
 
-ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
+static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
     /*please complete the function on your own*/
     if (*f_pos > test_size) {
         return 0;
@@ -56,7 +59,7 @@ ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t 
     return count;
 }
 
-ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos) {
+static ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos) {
     /*please complete the function on your own*/
     return count;
 }
