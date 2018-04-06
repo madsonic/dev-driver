@@ -19,9 +19,6 @@ static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, 
 static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos);
 static void onebyte_exit(void);
 
-static const char test[] = "Hello\n\0";
-static const ssize_t test_size = sizeof(test);
-
 /* definition of file_operation structure */
 static struct file_operations onebyte_fops = {
     .read =    onebyte_read,
@@ -30,6 +27,7 @@ static struct file_operations onebyte_fops = {
     .release = onebyte_release
 };
 
+#define CAPACITY 1
 static char *onebyte_data = NULL;
 
 static int onebyte_open(struct inode *inode, struct file *filep) {
@@ -42,21 +40,16 @@ static int onebyte_release(struct inode *inode, struct file *filep) {
 }
 
 static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
-    /*please complete the function on your own*/
-    if (*f_pos > test_size) {
+    if (*f_pos > CAPACITY) {
         return 0;
     }
 
-    if (*f_pos + count > test_size) {
-        count = test_size - *f_pos;
-    }
-
-    if (copy_to_user(buf, test + *f_pos, count) != 0) {
+    if (copy_to_user(buf, onebyte_data + *f_pos, CAPACITY) != 0) {
         return -EFAULT;
     }
 
-    *f_pos += count;
-    return count;
+    *f_pos += CAPACITY;
+    return CAPACITY;
 }
 
 static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
