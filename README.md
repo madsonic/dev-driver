@@ -1,5 +1,6 @@
 ### 1a
 module_init: when the module is loaded by the kernel
+
 module_exit: when the module is removed from memory / unloaded
 
 ### 1b
