@@ -53,6 +53,22 @@ static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, 
 }
 
 static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
+    if (*f_pos > CAPACITY) {
+	return 0;
+    }
+
+    if (copy_from_user(onebyte_data, buf, CAPACITY) != 0) {
+	return -EFAULT;
+    }	
+
+    *f_pos += CAPACITY;
+
+    if (count > CAPACITY) {
+        printk("no more space");
+	return -EFAULT;
+    }
+
+    return CAPACITY;
 }
 
 static int onebyte_init(void) {
