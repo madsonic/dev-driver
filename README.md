@@ -66,3 +66,49 @@ module_exit(hello_exit);
 ```shell
 $ mknod /dev/onebyte c 61 0
 ```
+
+### 2b
+![device list](https://i.imgur.com/3qexm4K.png)
+
+### 2c
+
+```c
+static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
+    if (*f_pos + count > CAPACITY) {
+        count = CAPACITY - *f_pos;
+    }
+
+    if (copy_to_user(buf, onebyte_data, count) != 0) {
+        return -EFAULT;
+    }
+    *f_pos += count;
+    return count;
+}
+```
+```c
+static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
+    if (*f_pos > CAPACITY) {
+        return 0;
+    }
+
+    if (copy_from_user(onebyte_data, buf, CAPACITY) != 0) {
+        return -EFAULT;
+    }
+
+
+    if (count > CAPACITY) {
+        return -ENOSPC;
+    }
+
+    return CAPACITY;
+}
+```
+
+Test cases
+![test cases](https://i.imgur.com/caYeesv.png)
+
+Commits log
+
+[View Github repo](https://github.com/madsonic/dev-driver)
+
+![commit log](https://i.imgur.com/EL1IKf6.png)
