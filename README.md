@@ -72,7 +72,7 @@ $ mknod /dev/onebyte c 61 0
 ![device list](https://i.imgur.com/3qexm4K.png)
 
 ### 2c
-
+[Code for read](https://github.com/madsonic/dev-driver/blob/master/one.c#L42)
 ```c
 static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
     if (*f_pos + count > CAPACITY) {
@@ -86,6 +86,8 @@ static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, 
     return count;
 }
 ```
+
+[Code for write](https://github.com/madsonic/dev-driver/blob/master/one.c#L54)
 ```c
 static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
     if (*f_pos > CAPACITY) {
@@ -110,6 +112,6 @@ Test cases
 
 Commits log
 
-[View Github repo](https://github.com/madsonic/dev-driver)
+[View Github repo](https://github.com/madsonic/dev-driver/commits/master)
 
 ![commit log](https://i.imgur.com/EL1IKf6.png)
