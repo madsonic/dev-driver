@@ -64,8 +64,7 @@ static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t 
     *f_pos += CAPACITY;
 
     if (count > CAPACITY) {
-        printk("no more space");
-	return -EFAULT;
+	return -ENOSPC;
     }
 
     return CAPACITY;
