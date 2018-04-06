@@ -40,16 +40,15 @@ static int onebyte_release(struct inode *inode, struct file *filep) {
 }
 
 static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos) {
-    if (*f_pos > CAPACITY) {
-        return 0;
+    if (*f_pos + count > CAPACITY) {
+	count = CAPACITY - *f_pos;
     }
-
-    if (copy_to_user(buf, onebyte_data + *f_pos, CAPACITY) != 0) {
+    
+    if (copy_to_user(buf, onebyte_data, count) != 0) {
         return -EFAULT;
     }
-
-    *f_pos += CAPACITY;
-    return CAPACITY;
+    *f_pos += count;
+    return count;
 }
 
 static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
@@ -61,7 +60,6 @@ static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t 
 	return -EFAULT;
     }	
 
-    *f_pos += CAPACITY;
 
     if (count > CAPACITY) {
 	return -ENOSPC;
