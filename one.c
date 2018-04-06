@@ -16,7 +16,7 @@ MODULE_LICENSE("GPL");
 static int onebyte_open(struct inode *inode, struct file *filep);
 static int onebyte_release(struct inode *inode, struct file *filep);
 static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos);
-static ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos);
+static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos);
 static void onebyte_exit(void);
 
 static const char test[] = "Hello\n\0";
@@ -59,9 +59,7 @@ static ssize_t onebyte_read(struct file *filep, char __user *buf, size_t count, 
     return count;
 }
 
-static ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos) {
-    /*please complete the function on your own*/
-    return count;
+static ssize_t onebyte_write(struct file *filep, const char __user *buf, size_t count, loff_t *f_pos) {
 }
 
 static int onebyte_init(void) {
